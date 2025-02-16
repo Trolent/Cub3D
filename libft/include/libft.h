@@ -6,7 +6,7 @@
 /*   By: trolland <trolland@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/30 12:40:53 by trolland          #+#    #+#             */
-/*   Updated: 2025/02/06 16:29:14 by trolland         ###   ########.fr       */
+/*   Updated: 2025/02/16 13:16:08 by trolland         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,11 +105,11 @@ a specified length*/
 char				*ft_substr(char const *s, unsigned int start, size_t len);
 /*trim a string from a set of characters at the beginning and the end*/
 char				*ft_strtrim(char const *s1, char const *set);
-/*transforms an integer to a string*/
+/*verify if the n first characters of a s1 are equal to s2*/
 int					ft_strncmp(const char *s1, const char *s2, size_t n);
-/*verify if last characters of a string are equal to another string*/
-int					ft_strcmp(char *s1, char *s2);
 /*compares two strings and returns 0 if they are identical*/
+int					ft_strcmp(char *s1, char *s2);
+/*compares s1 and s2 from the end to the beginning, returns 0 if they are equal*/
 int					check_last_characters(char *str, char *last);
 /*counts the number of words in a string separated by a single char*/
 int					count_words(char const *str, char charset);

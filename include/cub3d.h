@@ -6,11 +6,17 @@
 /*   By: trolland <trolland@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 09:53:30 by trolland          #+#    #+#             */
-/*   Updated: 2025/02/16 11:32:57 by trolland         ###   ########.fr       */
+/*   Updated: 2025/02/16 16:59:24 by trolland         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CUB3D_H
 # define CUB3D_H
+
+#define REACHED ft_printf("Reached\n");
+
+
+# include "types.h"
+
 
 #endif

@@ -1,33 +1,47 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strdup.c                                        :+:      :+:    :+:   */
+/*   types.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: trolland <trolland@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/30 12:40:08 by trolland          #+#    #+#             */
-/*   Updated: 2025/02/16 13:50:37 by trolland         ###   ########.fr       */
+/*   Created: 2025/02/16 13:09:38 by trolland          #+#    #+#             */
+/*   Updated: 2025/02/16 16:13:01 by trolland         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 
-char	*ft_strdup(const char *s1)
+#ifndef TYPES_H
+# define TYPES_H
+
+typedef enum texture
 {
-	int		i;
-	int		s1len;
-	char	*dup;
+    NO,
+    SO,
+    WE,
+    EA,
+    F,
+    C
+}	t_texture;
 
-	i = 0;
-	s1len = ft_strlen(s1);
-	dup = malloc(sizeof(char) * s1len + 1);
-	if (!dup)
-		return (NULL);
-	while (i < s1len)
-	{
-		dup[i] = s1[i];
-		i++;
-	}
-	dup[i] = '\0';
-	return (dup);
-}
+typedef struct s_row
+{
+    char   *map;
+    struct s_row *next;
+    struct s_row *prev;
+}	t_row;
+
+typedef struct s_map
+{
+    t_row  *raw;
+    char   *no;
+    char   *so;
+    char   *we;
+    char   *ea;
+    char   *f;
+    char   *c;
+    int    width;
+    int    height;
+}	t_map;
+
+#endif

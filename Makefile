@@ -6,7 +6,7 @@
 #    By: trolland <trolland@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/16 11:32:43 by trolland          #+#    #+#              #
-#    Updated: 2025/02/16 12:27:59 by trolland         ###   ########.fr        #
+#    Updated: 2025/02/16 17:36:14 by trolland         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,6 +15,8 @@ NAME	:=	cub3d
 LIBFT	:= 	libft/libft.a
 
 SRC		:=	main.c								\
+			parsing/parse.c						\
+			maping/map.c						\
 			
 
 SRC_DIR	:=	src
@@ -50,10 +52,6 @@ create_dirs:
 $(NAME): $(MLX_TARGET) $(OBJ) $(LIBFT)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) $(LIBFT) -o $(NAME)
 
-$(MLX_TARGET):
-	@$(MAKE) --no-print-directory -C $(MLX_PATH) > /dev/null 2>&1
-	@printf "\033[1;32mCompiled: $(MLX_PATH) \033[0m\n";
-
 $(BUILD)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(@D)
 	@$(CC) $(CFLAGS) -c $< -o $@
@@ -61,6 +59,10 @@ $(BUILD)/%.o: $(SRC_DIR)/%.c
 
 $(LIBFT):
 	@$(MAKE) --no-print-directory -C libft
+
+$(MLX_TARGET):
+	@$(MAKE) --no-print-directory -C $(MLX_PATH) > /dev/null 2>&1
+	@printf "\033[1;32mCompiled: $(MLX_PATH) \033[0m\n";
 
 clean:
 	@if [ -d "$(BUILD)" ]; then $(RM) -rf "$(BUILD)" && echo "\033[1;31mDeleted: $(BUILD)\033[0m"; fi
@@ -75,6 +77,9 @@ fclean: clean
 	@echo "\033[1;31mDeleted: $(MLX_TARGET)\033[0m"
 
 re: fclean all
+
+val: all
+	valgrind --leak-check=full --track-origins=yes ./${NAME} hello.cub
 
 -include $(DEPS)
 

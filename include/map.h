@@ -1,33 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strdup.c                                        :+:      :+:    :+:   */
+/*   map.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: trolland <trolland@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/30 12:40:08 by trolland          #+#    #+#             */
-/*   Updated: 2025/02/16 13:50:37 by trolland         ###   ########.fr       */
+/*   Created: 2025/02/16 14:09:09 by trolland          #+#    #+#             */
+/*   Updated: 2025/02/16 14:09:27 by trolland         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef MAP_H
+# define MAP_H
 
-char	*ft_strdup(const char *s1)
-{
-	int		i;
-	int		s1len;
-	char	*dup;
+# include "types.h"
 
-	i = 0;
-	s1len = ft_strlen(s1);
-	dup = malloc(sizeof(char) * s1len + 1);
-	if (!dup)
-		return (NULL);
-	while (i < s1len)
-	{
-		dup[i] = s1[i];
-		i++;
-	}
-	dup[i] = '\0';
-	return (dup);
-}
+void print_map(t_map *map);
+void free_map(t_map *map);
+
+#endif
