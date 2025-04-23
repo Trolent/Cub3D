@@ -5,82 +5,144 @@
 #                                                     +:+ +:+         +:+      #
 #    By: trolland <trolland@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/02/16 11:32:43 by trolland          #+#    #+#              #
-#    Updated: 2025/02/16 17:36:14 by trolland         ###   ########.fr        #
+#    Created: 2025/02/10 15:36:25 by acaetano          #+#    #+#              #
+#    Updated: 2025/04/21 15:52:18 by trolland         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-
-NAME	:=	cub3d
-LIBFT	:= 	libft/libft.a
-
-SRC		:=	main.c								\
-			parsing/parse.c						\
-			maping/map.c						\
-			
-
-SRC_DIR	:=	src
-BUILD	:=	.build
-SRC 	:=	$(addprefix $(SRC_DIR)/, $(SRC))
-OBJ 	:=	$(patsubst $(SRC_DIR)/%.c, $(BUILD)/%.o, $(SRC))
-DEPS 	:=	$(OBJ:.o=.d)
-
-CC		:=	cc 
-CFLAGS	:=	-Wall -Werror -Wextra -MMD -MP -Iinclude -Ilibft/include -I$(MLX_PATH) -g
-
-MLX_LINUX =	Minilibx/minilibx-linux/libmlx.a 
-MLX_MACOS = Minilibx/minilibx_macos/libmlx.a
+# **************************************************************************** #
+#                                 GET_OS SPEC                                 #
+# **************************************************************************** #
 
 OS := $(shell uname)
+
 ifeq ($(OS),Darwin)
     $(info Using macOS configuration)
-    MLX_TARGET = $(MLX_MACOS)
-    MLX_PATH = Minilibx/minilibx_macos
-    LDFLAGS = -L$(MLX_PATH) -lmlx -framework OpenGL -framework AppKit
+    MINILIBX = ./dependencies/minilibx/minilibx_macos
+    INC_MLX = -L $(MINILIBX) -lmlx -I $(MINILIBX) -framework OpenGL -framework AppKit
 else
-    MLX_TARGET = $(MLX_LINUX)
-    MLX_PATH = Minilibx/minilibx-linux
-    LDFLAGS = -L$(MLX_PATH) -lmlx -lXext -lX11 -lm -lz
+    MINILIBX = ./dependencies/minilibx/minilibx-linux
+    INC_MLX = -L $(MINILIBX) -lmlx -I $(MINILIBX) -lXext -lX11 -lXfixes 
 endif
 
 
-all: create_dirs $(NAME)
+# **************************************************************************** #
+#								DEPENDENCIES								   #
+# **************************************************************************** #
 
-create_dirs:
-	@mkdir -p $(BUILD)
+DPRINTF				= $(LIBS_PATH)/ft_dprintf.a
+LIBFT				= $(LIBS_PATH)/libft.a
 
-$(NAME): $(MLX_TARGET) $(OBJ) $(LIBFT)
-	@$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) $(LIBFT) -o $(NAME)
 
-$(BUILD)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(@D)
-	@$(CC) $(CFLAGS) -c $< -o $@
-	@printf "\033[1;32mCompiled: $<\033[0m\n";
+LIBS_PATH			= ./build
+HEADER_LIBFT		= ./dependencies/libft/include/
+HEADER_DPRINTF		= ./dependencies/ft_dprintf/include/
+
+# **************************************************************************** #
+#									CORE									   #
+# **************************************************************************** #
+
+
+NAME				= cub3d 
+ODIR				= ./objects
+
+SRC_PATH 			= ./sources
+HEADER_PATH			= ./includes
+
+HEADERS				= $(HEADER_PATH)/cub3d.h \
+					  $(HEADER_PATH)/typedef.h
+
+CC					= clang
+CFLAGS				= -Wall -Werror -Wextra -g -gdwarf-4 -fno-builtin -fPIE -MMD
+CMLX				= make -C $(MINILIBX) 
+INC_FLAGS			= -I $(HEADER_LIBFT) -I $(HEADER_DPRINTF) -I $(HEADER_PATH) -I $(MINILIBX)
+
+ifeq ($(OS),Darwin)
+   CFLAGS += -D MACOS
+else
+   CFLAGS += -D LINUX
+endif
+
+SOURCES				= game_engine/cosinta.c \
+					  game_engine/ray_casting.c \
+					  game_engine/dda_algorithm.c \
+					  game_engine/draw_slice.c \
+					  game_engine/draw_slice_utils.c \
+					  mini_map/mini_map.c \
+					  mini_map/mini_map_player.c \
+					  mini_map/mini_map_cone.c \
+					  mini_map/mini_map_utils.c \
+					  main/main.c \
+					  mlx/init_mlx.c \
+					  mlx/key_hooks.c \
+					  mlx/key_press_release.c \
+					  movement/backward.c \
+					  movement/forward.c \
+					  movement/interact.c \
+					  movement/lateral.c \
+					  movement/lateral2.c \
+					  movement/mouse_motion.c \
+					  movement/turn.c \
+					  movement/utils.c \
+					  parsing/check_arguments.c \
+					  parsing/check_file_extension.c \
+					  parsing/error.c \
+					  parsing/get_data.c \
+					  parsing/get_file.c \
+					  parsing/get_map.c \
+					  parsing/get_textures_paths.c \
+					  parsing/map_element_utils.c \
+					  parsing/map_validation.c \
+					  parsing/set_colors.c \
+					  parsing/set_player.c \
+					  parsing/set_player_utils.c \
+					  parsing/set_textures.c \
+					  parsing/is_element.c \
+					  parsing/door_text.c \
+					  utils/ft_exit.c \
+					  utils/ft_exit_utils.c \
+
+OBJ					= $(addprefix $(ODIR)/, $(SOURCES:.c=.o))
+DEP 				= $(OBJ:.o=.d)
+
+all: $(DPRINTF) $(LIBFT) $(ODIR) $(OBJ) $(NAME) $(HEADERS) 
+
+$(DPRINTF):
+	make -C ./dependencies/ft_dprintf
 
 $(LIBFT):
-	@$(MAKE) --no-print-directory -C libft
+	make -C ./dependencies/libft
 
-$(MLX_TARGET):
-	@$(MAKE) --no-print-directory -C $(MLX_PATH) > /dev/null 2>&1
-	@printf "\033[1;32mCompiled: $(MLX_PATH) \033[0m\n";
+$(ODIR):
+	mkdir -p $(ODIR)
+
+$(ODIR)/%.o: $(SRC_PATH)/%.c
+	mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(INC_FLAGS) -c $< -o $@ 
+
+
+$(NAME): $(ODIR) $(OBJ) $(HEADERS)
+	$(CMLX) && $(CC) $(CFLAGS) $(OBJ) -L $(LIBS_PATH) -L /usr/lib -lm -lz -L ./build -lft_dprintf -lft $(INC_MLX) -o $(NAME)
+
 
 clean:
-	@if [ -d "$(BUILD)" ]; then $(RM) -rf "$(BUILD)" && echo "\033[1;31mDeleted: $(BUILD)\033[0m"; fi
-	@$(MAKE) --no-print-directory clean -C libft > /dev/null 2>&1
-	@echo "\033[1;31mDeleted: libft/obj\033[0m"
+	rm -rf $(ODIR)
+	rm -rf $(LIBS_PATH)
+	make clean -C ./dependencies/libft
+	make clean -C ./dependencies/ft_dprintf
+	make clean -C $(MINILIBX)
 
 fclean: clean
-	@if [ -f $(NAME) ]; then $(RM) -rf $(NAME) && echo "\033[1;31mDeleted: $(NAME)\033[0m"; fi
-	@$(MAKE) --no-print-directory fclean -C libft > /dev/null 2>&1
-	@echo "\033[1;31mDeleted: $(LIBFT)\033[0m"
-	@$(MAKE) --no-print-directory clean -C $(MLX_PATH) > /dev/null 2>&1
-	@echo "\033[1;31mDeleted: $(MLX_TARGET)\033[0m"
+	rm -rf $(NAME)
+	make fclean -C ./dependencies/libft
+	make fclean -C ./dependencies/ft_dprintf
+
+run: all
+	clear && valgrind --track-fds=yes --leak-check=full --show-leak-kinds=all ./cub3d
 
 re: fclean all
+	clear
 
-val: all
-	valgrind --leak-check=full --track-origins=yes ./${NAME} hello.cub
+-include $(DEP)
 
--include $(DEPS)
-
-.PHONY: all create_dirs clean fclean re
+.PHONY: all re clean fclean
